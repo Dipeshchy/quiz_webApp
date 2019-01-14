@@ -2,11 +2,20 @@ package domain;
 
 public class Score {
     private int id;
+    private String uniqueGameId;
     private String user;
     private String question;
     private String correct_answer;
     private String given_answer;
     private String result;
+
+    public String getUniqueGameId() {
+        return uniqueGameId;
+    }
+
+    public void setUniqueGameId(String uniqueGameId) {
+        this.uniqueGameId = uniqueGameId;
+    }
 
     public int getId() {
         return id;

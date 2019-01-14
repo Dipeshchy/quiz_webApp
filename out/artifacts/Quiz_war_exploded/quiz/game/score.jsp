@@ -15,8 +15,8 @@
 <%@include file="../includes/navbar.jsp"%>
 <div class="container" style="color: white;">
     <h1>Your Result</h1>
-    <h4>Correct Answers : </h4>
-    <h4>Wrong Answers : </h4>
+    <h4>Correct Answers : ${correctCount} </h4>
+    <h4>Wrong Answers : ${wrongCount} </h4>
     <table class="table table-striped" style="color: white;">
         <tr>
             <th>Question</th>

@@ -32,28 +32,28 @@ public class QuizServices {
                 question.setCorrect_answer(rs.getString("correct_answer"));
                 question.setCategory(rs.getString("category"));
                 question.setDifficulty_level(rs.getString("difficulty_level"));
-            }
-        }
+            }        }
         catch (SQLException e) {
             e.printStackTrace();
         }
         return question;
     }
 
-    public void calculateScore(User user,int id, String answer) {
+    public void calculateScore(User user,int id, String answer,String uniquegameid) {
         Question question = getQuestionForInsert(id);
-        String query = "insert into score(user,question,correct_answer,given_answer,result) values(?,?,?,?,?)";
+        String query = "insert into score(uniquegameid,user,question,correct_answer,given_answer,result) values(?,?,?,?,?,?)";
         PreparedStatement pstm = db.getPreparedStatement(query);
         try {
-            pstm.setString(1,user.getUsername());
-            pstm.setString(2,question.getQuestion());
-            pstm.setString(3,question.getCorrect_answer());
-            pstm.setString(4,answer);
+            pstm.setString(1,uniquegameid);
+            pstm.setString(2,user.getUsername());
+            pstm.setString(3,question.getQuestion());
+            pstm.setString(4,question.getCorrect_answer());
+            pstm.setString(5,answer);
             if (answer.equalsIgnoreCase(question.getCorrect_answer())) {
-                pstm.setString(5,"Right");
+                pstm.setString(6,"Right");
             }
             else {
-                pstm.setString(5,"Wrong");
+                pstm.setString(6,"Wrong");
             }
             pstm.execute();
         }
@@ -81,13 +81,14 @@ public class QuizServices {
         return question;
     }
 
-    public List<Score> getScore(User user) {
+    public List<Score> getScore(User user,String uniquegameid) {
         Score score = null;
         List<Score> scoreList = new ArrayList<Score>();
-        String query = "select * from score where user=?";
+        String query = "select * from score where user=? and uniquegameid=?";
         PreparedStatement pstm = db.getPreparedStatement(query);
         try {
             pstm.setString(1,user.getUsername());
+            pstm.setString(2,uniquegameid);
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 score = new Score();
@@ -104,5 +105,24 @@ public class QuizServices {
         }
 
         return scoreList;
+    }
+
+    public int correctAnswer(User user,String uniquegameid) {
+        int correctCount=0;
+        String query = "select count(id) from score where user=? and uniquegameid=? and result=?";
+        PreparedStatement pstm = db.getPreparedStatement(query);
+        try {
+            pstm.setString(1,user.getUsername());
+            pstm.setString(2,uniquegameid);
+            pstm.setString(3,"Right");
+            ResultSet rs = pstm.executeQuery();
+            while (rs.next()) {
+                correctCount = rs.getInt(1);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return correctCount;
     }
 }
